@@ -4,7 +4,7 @@ emoji: "🧘"
 publication_name: "wizleap_tech"
 type: "idea" # tech: 技術記事 / idea: アイデア
 topics: ["品質", "意思決定"]
-published: false
+published: true
 ---
 
 ## はじめに
