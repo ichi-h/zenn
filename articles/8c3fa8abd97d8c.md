@@ -16,7 +16,7 @@ https://github.com/ichi-h/elmish
 実際にこちらのライブラリを使用して、**メッセージで駆動する関数型ノベルゲームエンジン**というものを開発しました。  
 こちらもかなり尖ったことをやっているので、興味がございましたらぜひご覧ください。
 
-https://github.com/ichi-h/tsuzuri
+https://zenn.dev/ichi_h/articles/036cd108880743
 
 ## とりあえず使ってみよう
 
