@@ -112,7 +112,7 @@ export const App = () => {
   const send = useElement(
     model, // 状態の初期値
     update, // Modelを更新する関数
-    view // 新しいModelを受け取って、UIを更新する関数
+    view, // 新しいModelを受け取って、UIを更新する関数
   );
 
   const increment = () => send({ type: "increment" });
@@ -135,20 +135,20 @@ Vueであればこうです。
 
 ```html
 <script setup lang="ts">
-import { ref } from "vue";
+  import { ref } from "vue";
 
-import { Model, init, useElement } from "./data";
-import { update } from "./update";
+  import { Model, init, useElement } from "./data";
+  import { update } from "./update";
 
-const model = ref(init);
-const view = (newModel: Model) => (model.value = newModel);
+  const model = ref(init);
+  const view = (newModel: Model) => (model.value = newModel);
 
-// メッセージを送信する関数を取得
-const send = useElement(model.value, update, view);
+  // メッセージを送信する関数を取得
+  const send = useElement(model.value, update, view);
 
-const increment = () => send({ type: "increment" });
-const decrement = () => send({ type: "decrement" });
-const reset = () => send({ type: "startReset" });
+  const increment = () => send({ type: "increment" });
+  const decrement = () => send({ type: "decrement" });
+  const reset = () => send({ type: "startReset" });
 </script>
 
 <template>
@@ -226,7 +226,7 @@ setupCounter(
 
 しかし、何でもかんでもFunctionalに記述すればよいとは思っておらず、オブジェクト指向的な考え方が有用となるケースももちろんあります。  
 上記で軽く触れた通り、状態やロジック等を再利用できることをメリットとして挙げましたが、これがフロントエンドにおいて最も活かされるのは、例えばshadcn/uiのような**UIコンポーネントライブラリ**です。  
-UIコンポーネントライブラリを利用する際、我々はコンポーネント内部のロジックや状態を基本的に考えることがないわけですが、これには**前提依存条件**という考え方が大きく絡んでいます。  
+UIコンポーネントライブラリを利用する際、我々はコンポーネント内部のロジックや状態を基本的に考えることがないわけですが、これには**前提条件依存**という考え方が大きく絡んでいます。  
 これは、**ソフトウェアを構成する個々の要素の中で正しく動くことを保証し、その信頼の上で別の要素を依存させる**という方法論です（詳しくは以下の記事で解説しています）。
 
 https://zenn.dev/wizleap_tech/articles/8e26df93acdeb8#%E5%89%8D%E6%8F%90%E6%9D%A1%E4%BB%B6%E4%BE%9D%E5%AD%98%E3%81%AB%E3%82%88%E3%82%8B%E6%AD%A3%E7%A2%BA%E3%81%95%E4%BF%9D%E8%A8%BC
@@ -248,22 +248,20 @@ The Elm Architectureとは、Elm言語で採用されているWebフロントエ
 私がここで解説するよりも[Elmのドキュメント](https://guide.elm-lang.jp/)の方がわかりやすいので詳細は割愛いたしますが、少し引用させていただきます。
 
 > Elm のプログラムが動く仕組みを図にすると、こんな風になります。
-> 
-> 
+>
 > ![Elm Architecture](https://static.ichi-h.com/works%2Felmish-library%2Felm-architecture.svg)
-> 
+>
 > Elm が画面に表示するためのHTMLを出力し、コンピュータは画面の中で起きたこと、例えば「ボタンがクリックされたよ！」というようなメッセージを Elm へ送り返します。
-> 
+>
 > さて、Elm プログラムの中では何が起きているのでしょうか？ Elm では、プログラムは必ず3つのパーツに分解できます。
-> 
+>
 > - **Model** — アプリケーションの状態
 > - **View** — 状態を HTML に変換する方法
 > - **Update** — メッセージを使って状態を更新する方法
-> 
+>
 > この3つのコンセプトこそ、**The Elm Architecture** の核心なのです。
-> 
+>
 > \- [The Elm Architecture · An Introduction to Elm](https://guide.elm-lang.jp/architecture/)
-> 
 
 要は、**Model**という状態と、その状態をHTMLとして出力する**View**、状態更新を担う**Update**の3つによってElmは成り立っている、ということですね。  
 図にすると以下のようになります。
@@ -371,7 +369,7 @@ const view = (newModel: Model) => {
 ### Testable
 
 冒頭の作った動機で述べた通り、@ichi-h/elmishでは状態更新のロジックを参照透過性が保たれた関数として記述することができるため、Testabilityを高く保つことができます。  
-@ichi-h/elmishがアプリケーションロジックに干渉するのは、Update関数やMessageの**型のみ**であるため、それ以外でライブラリがロジックに干渉することはありません。  
+@ichi-h/elmishがアプリケーションロジックに干渉するのは、Update関数やMessageの**型のみ**であるため、それ以外でライブラリがロジックに干渉することはありません。
 
 ```tsx
 // update.ts
@@ -400,7 +398,6 @@ test("カウントを1増やす", () => {
   expect(updated).toStrictEqual({ count: 1, loader: "idle" });
 });
 ```
-
 
 ### コードの責務が明確になる
 
@@ -467,7 +464,9 @@ const root = ReactDOM.createRoot(document.getElementById("root")!);
 const renderer = (html: React.ReactElement) => {
   root.render(<React.StrictMode>{html}</React.StrictMode>);
 };
-const { useElement, send } = elmish<Model, Message, React.ReactElement>(renderer);
+const { useElement, send } = elmish<Model, Message, React.ReactElement>(
+  renderer,
+);
 
 // modelからUIへ変換する関数を突っ込む
 useElement(init, update, ({ model }) => {
